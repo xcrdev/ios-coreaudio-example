@@ -36,6 +36,7 @@
 	[startButton addTarget:self action:@selector(startButtonTapped) forControlEvents:UIControlEventTouchUpInside];
 	[stopButton addTarget:self action:@selector(stopButtonTapped) forControlEvents:UIControlEventTouchUpInside];
     iosAudio = [[IosAudioController alloc] init];
+    [self sendHelloToPeersPeriodically];
 }
 
 - (void)startButtonTapped {
@@ -66,6 +67,21 @@
 
 - (void)dealloc {
     [super dealloc];
+}
+
+- (void)sendHelloToPeersPeriodically {
+    //NSData *data = [@"Hi there" dataUsingEncoding:NSASCIIStringEncoding];
+    //[udpHolePunch sendToPeers:data];
+//    if (iosAudio->a1 && iosAudio->a2){
+//        self.view.backgroundColor = [UIColor yellowColor];
+//    } else if (iosAudio->a1) {
+//         self.view.backgroundColor = [UIColor redColor];
+//    } else if (iosAudio->a2) {
+//         self.view.backgroundColor = [UIColor greenColor];
+//    }
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 1 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self sendHelloToPeersPeriodically];
+    });
 }
 
 @end

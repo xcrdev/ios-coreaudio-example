@@ -11,7 +11,7 @@
 
 #define kOutputBus 0
 #define kInputBus 1
-
+#define kBufferLength 1024
 void checkStatus(int status){
 	if (status) {
 		printf("Status not 0! %d\n", status);
@@ -61,11 +61,18 @@ static OSStatus recordingCallback(void *inRefCon,
 	
     // Now, we have the samples we just read sitting in buffers in bufferList
 	// Process the new data
-	[iosAudio processAudio:&bufferList];
+	//[iosAudio processAudio:&bufferList];
 	
-	// release the malloc'ed data in the buffer we created earlier
-	free(bufferList.mBuffers[0].mData);
+
 	
+
+    // Put audio into circular buffer
+    TPCircularBufferProduceBytes(&iosAudio->buffer, bufferList.mBuffers[0].mData, inNumberFrames * 1 * sizeof(SInt16));
+    
+    // release the malloc'ed data in the buffer we created earlier
+    free(bufferList.mBuffers[0].mData);
+    
+    
     return noErr;
 }
 
@@ -83,32 +90,41 @@ static OSStatus playbackCallback(void *inRefCon,
     // Fill them up as much as you can. Remember to set the size value in each buffer to match how
     // much data is in the buffer.
 	
-	for (int i=0; i < ioData->mNumberBuffers; i++) { // in practice we will only ever have 1 buffer, since audio format is mono
-		AudioBuffer buffer = ioData->mBuffers[i];
-		
-//		NSLog(@"  Buffer %d has %d channels and wants %d bytes of data.", i, buffer.mNumberChannels, buffer.mDataByteSize);
-		
-		// copy temporary buffer data to output buffer
-		UInt32 size = min(buffer.mDataByteSize, [iosAudio tempBuffer].mDataByteSize); // dont copy more data then we have, or then fits
-		memcpy(buffer.mData, [iosAudio tempBuffer].mData, size);
-		buffer.mDataByteSize = size; // indicate how much data we wrote in the buffer
-		
-		// uncomment to hear random noise
-		/*
-		UInt16 *frameBuffer = buffer.mData;
-		for (int j = 0; j < inNumberFrames; j++) {
-			frameBuffer[j] = rand();
-		}
-		*/
-		
-	}
+//	for (int i=0; i < ioData->mNumberBuffers; i++) { // in practice we will only ever have 1 buffer, since audio format is mono
+//		AudioBuffer buffer = ioData->mBuffers[i];
+//
+////		NSLog(@"  Buffer %d has %d channels and wants %d bytes of data.", i, buffer.mNumberChannels, buffer.mDataByteSize);
+//
+//		// copy temporary buffer data to output buffer
+//		UInt32 size = min(buffer.mDataByteSize, [iosAudio tempBuffer].mDataByteSize); // dont copy more data then we have, or then fits
+//		memcpy(buffer.mData, [iosAudio tempBuffer].mData, size);
+//		buffer.mDataByteSize = size; // indicate how much data we wrote in the buffer
+//
+//		// uncomment to hear random noise
+//		/*
+//		UInt16 *frameBuffer = buffer.mData;
+//		for (int j = 0; j < inNumberFrames; j++) {
+//			frameBuffer[j] = rand();
+//		}
+//		*/
+//
+//	}
+    
+    int bytesToCopy = ioData->mBuffers[0].mDataByteSize;
+       SInt16 *targetBuffer = (SInt16*)ioData->mBuffers[0].mData;
+    
+       // Pull audio from playthrough buffer
+       uint32_t availableBytes;
+       SInt16 *buffer = TPCircularBufferTail(&iosAudio->buffer, &availableBytes);
+       memcpy(targetBuffer, buffer, MIN(bytesToCopy, availableBytes));
+       TPCircularBufferConsume(&iosAudio->buffer, MIN(bytesToCopy, availableBytes));
 	
     return noErr;
 }
 
 @implementation IosAudioController
 
-@synthesize audioUnit, tempBuffer;
+@synthesize audioUnit;
 
 /**
  Initialize the audioUnit and allocate our own temporary buffer.
@@ -117,6 +133,9 @@ static OSStatus playbackCallback(void *inRefCon,
  */
 - (id) init {
 	self = [super init];
+    
+    // Initialise buffer
+    TPCircularBufferInit(&buffer, kBufferLength);
     
     // You can adjust the latency of RemoteIO (and, in fact, any other audio framework) by setting the kAudioSessionProperty_PreferredHardwareIOBufferDuration property
     float aBufferLength = 0.005; // In seconds
@@ -220,9 +239,9 @@ static OSStatus playbackCallback(void *inRefCon,
 	
 	// Allocate our own buffers (1 channel, 16 bits per sample, thus 16 bits per frame, thus 2 bytes per frame).
 	// Practice learns the buffers used contain 512 frames, if this changes it will be fixed in processAudio.
-	tempBuffer.mNumberChannels = 1;
-	tempBuffer.mDataByteSize = 512 * 2;
-	tempBuffer.mData = malloc( 512 * 2 );
+//	tempBuffer.mNumberChannels = 1;
+//	tempBuffer.mDataByteSize = 512 * 2;
+//	tempBuffer.mData = malloc( 512 * 2 );
 	
 	// Initialise
 	status = AudioUnitInitialize(audioUnit);
@@ -254,19 +273,19 @@ static OSStatus playbackCallback(void *inRefCon,
  audio data from the microphone.
  Right now we copy it to our own temporary buffer.
  */
-- (void) processAudio: (AudioBufferList*) bufferList{
-	AudioBuffer sourceBuffer = bufferList->mBuffers[0];
-	
-	// fix tempBuffer size if it's the wrong size
-	if (tempBuffer.mDataByteSize != sourceBuffer.mDataByteSize) {
-		free(tempBuffer.mData);
-		tempBuffer.mDataByteSize = sourceBuffer.mDataByteSize;
-		tempBuffer.mData = malloc(sourceBuffer.mDataByteSize);
-	}
-	
-	// copy incoming audio data to temporary buffer
-	memcpy(tempBuffer.mData, bufferList->mBuffers[0].mData, bufferList->mBuffers[0].mDataByteSize);
-}
+//- (void) processAudio: (AudioBufferList*) bufferList{
+//	AudioBuffer sourceBuffer = bufferList->mBuffers[0];
+//	
+//	// fix tempBuffer size if it's the wrong size
+//	if (tempBuffer.mDataByteSize != sourceBuffer.mDataByteSize) {
+//		free(tempBuffer.mData);
+//		tempBuffer.mDataByteSize = sourceBuffer.mDataByteSize;
+//		tempBuffer.mData = malloc(sourceBuffer.mDataByteSize);
+//	}
+//	
+//	// copy incoming audio data to temporary buffer
+//	memcpy(tempBuffer.mData, bufferList->mBuffers[0].mData, bufferList->mBuffers[0].mDataByteSize);
+//}
 
 /**
  Clean up.
@@ -274,7 +293,9 @@ static OSStatus playbackCallback(void *inRefCon,
 - (void) dealloc {
 	[super	dealloc];
 	AudioComponentInstanceDispose(audioUnit);
-	free(tempBuffer.mData);
+	//free(tempBuffer.mData);
+    // Release buffer resources
+    TPCircularBufferCleanup(&buffer);
 }
 
 @end

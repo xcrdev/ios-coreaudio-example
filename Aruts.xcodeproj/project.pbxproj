@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		0072019324771E34003319E5 /* TPCircularBuffer.c in Sources */ = {isa = PBXBuildFile; fileRef = 0072018F24771E34003319E5 /* TPCircularBuffer.c */; };
+		0072019424771E34003319E5 /* TPCircularBuffer+AudioBufferList.c in Sources */ = {isa = PBXBuildFile; fileRef = 0072019024771E34003319E5 /* TPCircularBuffer+AudioBufferList.c */; };
 		1D3623260D0F684500981E51 /* ArutsAppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 1D3623250D0F684500981E51 /* ArutsAppDelegate.m */; };
 		1D60589B0D05DD56006BFB54 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 29B97316FDCFA39411CA2CEA /* main.m */; };
 		1D60589F0D05DD5A006BFB54 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1D30AB110D05D00D00671497 /* Foundation.framework */; };
@@ -24,6 +26,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0072018F24771E34003319E5 /* TPCircularBuffer.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = TPCircularBuffer.c; sourceTree = "<group>"; };
+		0072019024771E34003319E5 /* TPCircularBuffer+AudioBufferList.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = "TPCircularBuffer+AudioBufferList.c"; sourceTree = "<group>"; };
+		0072019124771E34003319E5 /* TPCircularBuffer+AudioBufferList.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "TPCircularBuffer+AudioBufferList.h"; sourceTree = "<group>"; };
+		0072019224771E34003319E5 /* TPCircularBuffer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TPCircularBuffer.h; sourceTree = "<group>"; };
 		1D30AB110D05D00D00671497 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1D3623240D0F684500981E51 /* ArutsAppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ArutsAppDelegate.h; sourceTree = "<group>"; };
 		1D3623250D0F684500981E51 /* ArutsAppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ArutsAppDelegate.m; sourceTree = "<group>"; };
@@ -65,6 +71,10 @@
 		080E96DDFE201D6D7F000001 /* Classes */ = {
 			isa = PBXGroup;
 			children = (
+				0072018F24771E34003319E5 /* TPCircularBuffer.c */,
+				0072019224771E34003319E5 /* TPCircularBuffer.h */,
+				0072019024771E34003319E5 /* TPCircularBuffer+AudioBufferList.c */,
+				0072019124771E34003319E5 /* TPCircularBuffer+AudioBufferList.h */,
 				1D3623240D0F684500981E51 /* ArutsAppDelegate.h */,
 				1D3623250D0F684500981E51 /* ArutsAppDelegate.m */,
 				28D7ACF60DDB3853001CB0EB /* ArutsViewController.h */,
@@ -202,7 +212,9 @@
 				1D60589B0D05DD56006BFB54 /* main.m in Sources */,
 				1D3623260D0F684500981E51 /* ArutsAppDelegate.m in Sources */,
 				28D7ACF80DDB3853001CB0EB /* ArutsViewController.m in Sources */,
+				0072019324771E34003319E5 /* TPCircularBuffer.c in Sources */,
 				F4C28E5A12628B1600D58EDF /* IosAudioController.m in Sources */,
+				0072019424771E34003319E5 /* TPCircularBuffer+AudioBufferList.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

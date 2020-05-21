@@ -8,7 +8,7 @@
 
 #import <Foundation/Foundation.h>
 #import <AudioToolbox/AudioToolbox.h>
-
+#include "TPCircularBuffer.h"
 #ifndef max
 #define max( a, b ) ( ((a) > (b)) ? (a) : (b) )
 #endif
@@ -20,11 +20,13 @@
 
 @interface IosAudioController : NSObject {
 	AudioComponentInstance audioUnit;
-	AudioBuffer tempBuffer; // this will hold the latest data from the microphone
+	//AudioBuffer tempBuffer; // this will hold the latest data from the microphone
+@public
+    TPCircularBuffer buffer;
 }
 
 @property (readonly) AudioComponentInstance audioUnit;
-@property (readonly) AudioBuffer tempBuffer;
+//@property (readonly) AudioBuffer tempBuffer;
 
 - (void) start;
 - (void) stop;

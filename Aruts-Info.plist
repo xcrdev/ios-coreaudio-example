@@ -26,6 +26,8 @@
 	<string>MainWindow</string>
 	<key>UILaunchStoryboardName</key>
 	<string>Launch Screen</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Microphone needed for voice chat.</string>
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
